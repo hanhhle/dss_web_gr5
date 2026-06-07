@@ -31,31 +31,40 @@ Open your terminal/command prompt and run:
 ```bash
 git clone <YOUR_GITHUB_REPO_URL_HERE>
 cd dss_web_gr5
+```
 
 ### 2. Set up a Virtual Environment
 It is highly recommended to use a virtual environment to avoid package conflicts.
 
 For Mac/Linux:
 Bash
+```
 python3 -m venv .venv
 source .venv/bin/activate
+```
 
 For Windows (Command Prompt):
 DOS
+```
 python -m venv .venv
 .venv\Scripts\activate
+```
 
 ### 3. Install Dependencies
 Install all required libraries using pip:
 
 Bash
+```
 pip install -r requirements.txt
+```
 
 ### 4. Run the Application
 Start the Streamlit server:
 
 Bash
+```
 streamlit run app.py
+```
 The application will automatically open in your default web browser at http://localhost:8501.
 
 💡 How to use the Dashboard
