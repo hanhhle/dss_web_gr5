@@ -79,7 +79,7 @@ if not raw_data.empty and not leads.empty and not rules.empty:
     
     tab1, tab2, tab3, tab4 = st.tabs([
         "1. Customer Market Overview", 
-        "2. Campaign Decision (Hot Leads)", 
+        "2. Campaign Decision", 
         "3. Cross-Selling Strategy",
         "4. Campaign Comparison"
     ])
@@ -137,6 +137,29 @@ if not raw_data.empty and not leads.empty and not rules.empty:
                 fig_bar_spend = px.bar(spend_df, x='Final_Segment', y='Total_Enterprise_Spend', color='Final_Segment')
                 render_chart_or_table(fig_bar_spend, spend_df, "t1_tot_spend")
             
+            # 4. Product Category Sum
+            st.markdown("---")
+            st.markdown("**Sum of Products by Segment**")
+            prod_sum_df = df_t1.groupby('Final_Segment')[product_cols].sum().reset_index()
+            prod_melt = prod_sum_df.melt(id_vars='Final_Segment', value_vars=product_cols, var_name='Product', value_name='Total Spend')
+            fig_prod_sum = px.bar(prod_melt, x='Final_Segment', y='Total Spend', color='Product', barmode='group')
+            render_chart_or_table(fig_prod_sum, prod_melt, "t1_prod_sum")
+
+            c1, c2, c3 = st.columns([1, 2, 1]) 
+            with c2:
+                st.markdown("### Customer Clusters Overview")
+                fig1, ax1 = plt.subplots(figsize=(6, 4))                
+                sns.scatterplot(
+                    data=df_t1, 
+                    x='IT_Budget_USD', 
+                    y='Total_Enterprise_Spend', 
+                    hue='Final_Segment', 
+                    palette='Set2',
+                    ax=ax1
+                )
+                ax1.set_title("Financial Budget vs Historical Spend", fontsize=10, fontweight='bold')
+                st.pyplot(fig1, use_container_width=True)
+
             # 3. Segment Table & Budget Dist
             st.markdown("---")
             st.markdown("**Segment Characteristics Table**")
@@ -146,29 +169,6 @@ if not raw_data.empty and not leads.empty and not rules.empty:
             st.markdown("**IT Budget Distribution**")
             fig_hist1 = px.histogram(df_t1, x='IT_Budget_USD', color='Final_Segment', marginal="box")
             st.plotly_chart(fig_hist1, use_container_width=True)
-
-            # 4. Product Category Sum
-            st.markdown("---")
-            st.markdown("**Sum of Products by Segment**")
-            prod_sum_df = df_t1.groupby('Final_Segment')[product_cols].sum().reset_index()
-            prod_melt = prod_sum_df.melt(id_vars='Final_Segment', value_vars=product_cols, var_name='Product', value_name='Total Spend')
-            fig_prod_sum = px.bar(prod_melt, x='Final_Segment', y='Total Spend', color='Product', barmode='group')
-            render_chart_or_table(fig_prod_sum, prod_melt, "t1_prod_sum")
-
-            st.markdown("---")
-            st.markdown("**Customer Clusters Overview**")
-            fig1, ax1 = plt.subplots(figsize=(8, 5))
-            
-            sns.scatterplot(
-                data=df_t1, 
-                x='IT_Budget_USD', 
-                y='Total_Enterprise_Spend', 
-                hue='Final_Segment', 
-                palette='Set2',
-                ax=ax1
-            )
-            ax1.set_title("Financial Budget vs Historical Spend", fontsize=11, fontweight='bold')
-            st.pyplot(fig1, use_container_width=True)
             
             st.markdown("---")
             st.write("### Raw Data Reference")
@@ -176,7 +176,7 @@ if not raw_data.empty and not leads.empty and not rules.empty:
 
 
     # -----------------------------------------------------------------
-    # TAB 2: DESIGN PHASE (Hot Leads)
+    # TAB 2: DESIGN PHASE
     # -----------------------------------------------------------------
     with tab2:
         st.success("**Decision Contribution (Design Phase):** Identify customers with high conversion potential and evaluate business value.")
@@ -194,7 +194,7 @@ if not raw_data.empty and not leads.empty and not rules.empty:
 
         if not df_t2.empty:
             # 1. KPIs
-            st.markdown("#### ⚡ Quick Insights")
+            st.markdown("#### 📊 Quick Insights")
             kd1, kd2, kd3, kd4 = st.columns(4)
             kd1.metric("Total Hot Leads", f"{len(df_t2):,}")
             kd2.metric("Avg. Probability", f"{df_t2['Probability_To_Buy'].mean()*100:.1f}%")
@@ -270,7 +270,7 @@ if not raw_data.empty and not leads.empty and not rules.empty:
             df_t3.rename(columns={'Khách Đã Mua': 'Antecedents', 'Gợi Ý Bán Chéo': 'Consequents'}, inplace=True)
             
             # 1. KPIs
-            st.markdown("#### ⚡ Quick Insights")
+            st.markdown("#### 📊 Quick Insights")
             kr1, kr2, kr3 = st.columns(3)
             kr1.metric("Total Actionable Rules", len(df_t3))
             kr2.metric("Avg. Lift", f"{df_t3['Lift'].mean():.2f}")
