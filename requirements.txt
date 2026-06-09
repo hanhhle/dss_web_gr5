@@ -7,3 +7,4 @@ mlxtend
 matplotlib
 seaborn
 openpyxl
+plotly
