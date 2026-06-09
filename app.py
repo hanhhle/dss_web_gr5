@@ -202,7 +202,27 @@ if not raw_data.empty and not leads.empty and not rules.empty:
             kd4.metric("Avg. Model AUC", f"{df_t2['Model_AUC'].mean():.2f}")
             
             st.markdown("---")
-            
+            # --- Biểu đồ 1: Funnel Phân phối (Total Base, Accepted, Hot Leads) ---
+            st.markdown("**Funnel Conversion Analysis**")
+            # Giả định dữ liệu bạn có cột 'Accepted_Cmp' (1/0)
+            funnel_data = pd.DataFrame({
+                "Stage": ["Total Base", "Accepted", "Hot Leads"],
+                "Count": [len(raw_data), df_t2[df_t2['AcceptedCmp1'] == 1].shape[0], len(df_t2)]
+            })
+            fig_funnel = px.funnel(funnel_data, x='Count', y='Stage')
+            render_chart_or_table(fig_funnel, funnel_data, "t2_funnel")
+
+            # --- Biểu đồ 2: Phân phối Probability & Budget ---
+            r_dist1, r_dist2 = st.columns(2)
+            with r_dist1:
+                st.markdown("**Probability to Buy Distribution**")
+                fig_prob = px.histogram(df_t2, x='Probability_To_Buy', nbins=15, color_discrete_sequence=['royalblue'])
+                st.plotly_chart(fig_prob, use_container_width=True)
+            with r_dist2:
+                st.markdown("**Budget Distribution of Hot Leads**")
+                fig_bud = px.histogram(df_t2, x='IT_Budget_USD', nbins=10, color_discrete_sequence=['seagreen'])
+                st.plotly_chart(fig_bud, use_container_width=True)
+                
             # 2. Bảng Avg Metrics
             st.markdown("**Predictive Performance by Segment**")
             seg_perf = df_t2.groupby('Final_Segment').agg(
