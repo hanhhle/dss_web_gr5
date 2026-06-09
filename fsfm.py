@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
@@ -142,6 +140,7 @@ if not raw_data.empty and not leads.empty and not rules.empty:
             st.markdown("**Segment Characteristics Table**")
             sum_tb = df_t1.groupby('Final_Segment')[['IT_Budget_USD', 'Total_Enterprise_Spend', 'AI_Spending_Ratio', 'Partnership_Years']].mean().reset_index()
             st.dataframe(sum_tb.style.format({"IT_Budget_USD": "${:,.0f}", "Total_Enterprise_Spend": "${:,.0f}", "AI_Spending_Ratio": "{:.2f}%", "Partnership_Years": "{:.1f}"}), use_container_width=True)
+            
             st.markdown("---")
             st.markdown("**IT Budget Distribution**")
             fig_hist1 = px.histogram(df_t1, x='IT_Budget_USD', color='Final_Segment', marginal="box")
@@ -154,26 +153,6 @@ if not raw_data.empty and not leads.empty and not rules.empty:
             prod_melt = prod_sum_df.melt(id_vars='Final_Segment', value_vars=product_cols, var_name='Product', value_name='Total Spend')
             fig_prod_sum = px.bar(prod_melt, x='Final_Segment', y='Total Spend', color='Product', barmode='group')
             render_chart_or_table(fig_prod_sum, prod_melt, "t1_prod_sum")
-
-            st.markdown("---")
-            st.markdown("**Customer Clusters Overview**")
-            fig1, ax1 = plt.subplots(figsize=(8, 5))
-            
-            sns.scatterplot(
-                data=df_t1, 
-                x='IT_Budget_USD', 
-                y='Total_Enterprise_Spend', 
-                hue='Final_Segment', 
-                palette='Set2',
-                ax=ax1
-            )
-            ax1.set_title("Financial Budget vs Historical Spend", fontsize=11, fontweight='bold')
-            st.pyplot(fig1, use_container_width=True)
-            
-            st.markdown("---")
-            st.write("### Raw Data Reference")
-            st.dataframe(raw_data, use_container_width=True)
-
 
     # -----------------------------------------------------------------
     # TAB 2: DESIGN PHASE (Hot Leads)
